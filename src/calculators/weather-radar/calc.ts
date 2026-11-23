@@ -16,21 +16,25 @@ export interface RadarInput {
 }
 
 export interface RadarResult {
-  /** Elevation of the upper beam edge, + above the horizon. Used to find tops. */
+  /** Elevation of the upper / lower beam edge, + above the horizon. */
   upperEdgeDeg: number
   lowerEdgeDeg: number
-  /** Target height relative to the aircraft, ft (+ above, − below); includes curvature when enabled. */
-  exactFt: number
-  /** Part of exactFt that comes from earth curvature (0 when disabled). */
+  /** Beam coverage at the distance relative to the aircraft, ft (+ above, − below); includes curvature when enabled. */
+  upperFt: number
+  lowerFt: number
+  /** Part of upperFt/lowerFt that comes from earth curvature (0 when disabled). */
   curvatureFt: number
   /** 1:60 rule: 1° ≙ 1 NM at 60 NM. */
-  rule60Ft: number
+  rule60UpperFt: number
+  rule60LowerFt: number
   /** 100 rule: 100 ft per NM per degree. */
-  rule100Ft: number
-  rule60ErrorFt: number
-  rule100ErrorFt: number
-  /** Vertical extent of the beam at the target distance. */
-  beamDepthFt: number
+  rule100UpperFt: number
+  rule100LowerFt: number
+  /** Rule − exact. */
+  rule60UpperErrorFt: number
+  rule60LowerErrorFt: number
+  rule100UpperErrorFt: number
+  rule100LowerErrorFt: number
 }
 
 const rad = (deg: number) => (deg * Math.PI) / 180
@@ -43,18 +47,23 @@ export function computeRadar({ beamWidthDeg, tiltDeg, distanceNm, earthCurvature
   const upperEdgeDeg = tiltDeg + beamWidthDeg / 2
   const lowerEdgeDeg = tiltDeg - beamWidthDeg / 2
   const curv = earthCurvature ? curvatureFt(distanceNm) : 0
-  const exactFt = heightAt(distanceNm, upperEdgeDeg) + curv
-  const rule60Ft = ((distanceNm * upperEdgeDeg) / 60) * FT_PER_NM
-  const rule100Ft = distanceNm * upperEdgeDeg * 100
+  const upperFt = heightAt(distanceNm, upperEdgeDeg) + curv
+  const lowerFt = heightAt(distanceNm, lowerEdgeDeg) + curv
+  const rule60 = (deg: number) => ((distanceNm * deg) / 60) * FT_PER_NM
+  const rule100 = (deg: number) => distanceNm * deg * 100
   return {
     upperEdgeDeg,
     lowerEdgeDeg,
-    exactFt,
+    upperFt,
+    lowerFt,
     curvatureFt: curv,
-    rule60Ft,
-    rule100Ft,
-    rule60ErrorFt: rule60Ft - exactFt,
-    rule100ErrorFt: rule100Ft - exactFt,
-    beamDepthFt: heightAt(distanceNm, upperEdgeDeg) - heightAt(distanceNm, lowerEdgeDeg),
+    rule60UpperFt: rule60(upperEdgeDeg),
+    rule60LowerFt: rule60(lowerEdgeDeg),
+    rule100UpperFt: rule100(upperEdgeDeg),
+    rule100LowerFt: rule100(lowerEdgeDeg),
+    rule60UpperErrorFt: rule60(upperEdgeDeg) - upperFt,
+    rule60LowerErrorFt: rule60(lowerEdgeDeg) - lowerFt,
+    rule100UpperErrorFt: rule100(upperEdgeDeg) - upperFt,
+    rule100LowerErrorFt: rule100(lowerEdgeDeg) - lowerFt,
   }
 }
