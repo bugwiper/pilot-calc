@@ -54,7 +54,7 @@ export default function TempCorrectionPage() {
           <p className="hint">ISA at {fmtInt(ref)} ft is {fmtDec(isaTempC(ref))} °C (15 °C − 1.98 °C per 1000 ft).</p>
         )}
         <LinkedGroup title="Altitudes">
-          <NumberField label="Reference" unit="ft MSL" hint="Station of the altimeter setting" value={form.raw.ref} onChange={set('ref')} />
+          <NumberField label="Reference (QNH station)" unit="ft MSL" hint="Where the altimeter setting comes from" value={form.raw.ref} onChange={set('ref')} />
           <NumberField label="Aircraft (indicated)" unit="ft MSL" value={form.raw.ac} onChange={set('ac')} />
           <NumberField label="Aircraft above reference" unit="ft" value={form.raw.above} onChange={set('above')} />
         </LinkedGroup>
@@ -62,7 +62,7 @@ export default function TempCorrectionPage() {
 
       <Section
         title="Result"
-        note="Assumes the altimeter is set to the QNH of the reference and that the ISA deviation stays constant over the whole layer. Cold air: you are lower than indicated. Warm air: higher."
+        note="Altimeter set to the QNH of the reference: the error is zero at the reference and grows with height above it. The ISA deviation is assumed constant over the layer. Cold air: you are lower than indicated. Warm air: higher."
       >
         {r ? (
           <>

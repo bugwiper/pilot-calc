@@ -8,7 +8,6 @@
   --accent: #5aa2ff;
   --warn: #f5b942;
   --danger: #ff7a70;
-  --water: #2f9bd9;
   --terrain: #8a5a34;
   --terrain-dark: #5e3b1e;
   --grass: #5f8f3a;
@@ -31,7 +30,6 @@
     --accent: #1565d8;
     --warn: #b36b00;
     --danger: #c0372b;
-    --water: #3aa5e6;
     --terrain: #a8733f;
     --terrain-dark: #6f4521;
     --grass: #6f9f45;
@@ -154,9 +152,6 @@ button { font: inherit; color: inherit; }
 
 /* ---------- diagram ---------- */
 .diagram { display: block; width: 100%; height: auto; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; }
-.dg-water-top { stop-color: var(--water); stop-opacity: .75; }
-.dg-water-bottom { stop-color: var(--water); stop-opacity: .3; }
-.dg-wave { fill: none; stroke: var(--water); stroke-width: 2; }
 .dg-terrain { fill: var(--terrain); stroke: var(--terrain-dark); stroke-width: 1.5; stroke-linejoin: round; }
 .dg-grass { stroke: var(--grass); stroke-width: 3; }
 .dg-line { stroke-width: 2; }

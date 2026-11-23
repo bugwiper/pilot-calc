@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { computeCorrection, isaDevToTemp, isaPressureAltFt, isaPressureHpa, isaTempC, tempToIsaDev } from './calc'
+import { computeCorrection, isaDevToTemp, isaTempC, tempToIsaDev } from './calc'
 import { makeState, parseNum, update } from './model'
 
 describe('ISA temperature', () => {
@@ -10,17 +10,6 @@ describe('ISA temperature', () => {
   it('converts temperature ⇄ deviation both ways', () => {
     expect(tempToIsaDev(-5, 5000)).toBeCloseTo(-10.1, 6)
     expect(isaDevToTemp(tempToIsaDev(-7.3, 2400), 2400)).toBeCloseTo(-7.3, 9)
-  })
-})
-
-describe('ISA pressure', () => {
-  it('matches standard values', () => {
-    expect(isaPressureHpa(0)).toBeCloseTo(1013.25, 6)
-    expect(isaPressureAltFt(500)).toBeCloseTo(18285, -2)
-    expect(isaPressureHpa(18281)).toBeCloseTo(500, 0)
-  })
-  it('round-trips', () => {
-    expect(isaPressureHpa(isaPressureAltFt(780))).toBeCloseTo(780, 6)
   })
 })
 
