@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { CALCULATORS, GROUPS } from './calculators/registry'
+import { KeypadProvider } from './ui/Keypad'
 
 const WIDE = '(min-width: 900px)'
 
@@ -25,6 +26,7 @@ export function App() {
   }
 
   return (
+    <KeypadProvider>
     <div className={`app ${navOpen ? 'nav-open' : ''}`}>
       <div className="backdrop" onClick={() => setNavOpen(false)} />
       <nav className="nav" aria-label="Calculators" aria-hidden={!navOpen}>
@@ -66,5 +68,6 @@ export function App() {
         </main>
       </div>
     </div>
+    </KeypadProvider>
   )
 }

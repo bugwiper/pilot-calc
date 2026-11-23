@@ -1,41 +1,49 @@
-import { useId } from 'react'
+import { useId, useRef } from 'react'
+import { isTouch, useKeypad } from './Keypad'
 
 interface Props {
   label: string
   unit: string
   value: string
   onChange: (text: string) => void
-  /** Show a ± button (iOS decimal keypads have no minus key). */
+  /** Allows negative values (enables the ± key of the keypad). */
   signed?: boolean
   hint?: string
 }
 
 export function NumberField({ label, unit, value, onChange, signed = false, hint }: Props) {
   const id = useId()
-  const toggleSign = () => {
-    const t = value.trim()
-    if (t.startsWith('-') || t.startsWith('−')) onChange(t.slice(1))
-    else onChange('-' + t)
-  }
+  const keypad = useKeypad()
+  const touch = useRef(isTouch()).current
+  const latest = useRef({ value, onChange })
+  latest.current = { value, onChange }
+
   return (
     <div className="field">
       <label htmlFor={id}>{label}</label>
       <div className="field-box">
-        {signed && (
-          <button type="button" className="sign-btn" onClick={toggleSign} aria-label="Toggle sign">
-            ±
-          </button>
-        )}
         <input
           id={id}
           type="text"
-          inputMode="decimal"
+          inputMode={touch ? 'none' : 'decimal'}
+          readOnly={touch}
           autoComplete="off"
           autoCorrect="off"
-          enterKeyHint="done"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          onFocus={(e) => e.target.select()}
+          onFocus={(e) => {
+            if (!touch) return e.target.select()
+            keypad?.open({
+              id,
+              label,
+              unit,
+              signed,
+              input: e.target,
+              getValue: () => latest.current.value,
+              onChange: (t) => latest.current.onChange(t),
+            })
+          }}
+          onBlur={() => keypad?.close(id)}
         />
         <span className="unit">{unit}</span>
       </div>

@@ -8,6 +8,10 @@
   --accent: #5aa2ff;
   --warn: #f5b942;
   --danger: #ff7a70;
+  --water: #2f9bd9;
+  --terrain: #8a5a34;
+  --terrain-dark: #5e3b1e;
+  --grass: #5f8f3a;
   --radius: 14px;
   --nav-w: 264px;
   --sat: env(safe-area-inset-top);
@@ -27,6 +31,10 @@
     --accent: #1565d8;
     --warn: #b36b00;
     --danger: #c0372b;
+    --water: #3aa5e6;
+    --terrain: #a8733f;
+    --terrain-dark: #6f4521;
+    --grass: #6f9f45;
     color-scheme: light;
   }
 }
@@ -124,10 +132,6 @@ button { font: inherit; color: inherit; }
   font: inherit; font-size: 20px; font-variant-numeric: tabular-nums; text-align: right;
 }
 .unit { color: var(--muted); font-size: 13px; margin-left: 4px; white-space: nowrap; }
-.sign-btn {
-  background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px;
-  width: 34px; height: 34px; font-size: 18px; cursor: pointer; flex: none;
-}
 .field .hint { margin-top: 4px; font-size: 12px; }
 
 /* ---------- results ---------- */
@@ -150,15 +154,57 @@ button { font: inherit; color: inherit; }
 
 /* ---------- diagram ---------- */
 .diagram { display: block; width: 100%; height: auto; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; }
-.dg-sea { fill: color-mix(in srgb, var(--accent) 14%, transparent); }
-.dg-terrain { fill: color-mix(in srgb, var(--muted) 45%, transparent); }
-.dg-seaLine { stroke: var(--accent); stroke-width: 1.5; }
+.dg-water-top { stop-color: var(--water); stop-opacity: .75; }
+.dg-water-bottom { stop-color: var(--water); stop-opacity: .3; }
+.dg-wave { fill: none; stroke: var(--water); stroke-width: 2; }
+.dg-terrain { fill: var(--terrain); stroke: var(--terrain-dark); stroke-width: 1.5; stroke-linejoin: round; }
+.dg-grass { stroke: var(--grass); stroke-width: 3; }
 .dg-line { stroke-width: 2; }
 .dg-line.true { stroke: var(--accent); }
 .dg-line.isa { stroke: var(--muted); stroke-dasharray: 7 5; }
+.dg-baro { stroke-width: 1; }
+.dg-baro.act { stroke: var(--accent); opacity: .55; }
+.dg-baro.isa { stroke: var(--muted); stroke-dasharray: 3 4; opacity: .8; }
+.dg-tick { font-size: 10px; fill: var(--text); font-variant-numeric: tabular-nums; }
+.dg-tick.muted { fill: var(--muted); }
+.dg-tick.strong { fill: var(--accent); }
 .dg-label { font-size: 12px; fill: var(--text); }
 .dg-label.muted { fill: var(--muted); }
 .dg-label.strong { font-weight: 700; fill: var(--accent); }
+.dg-label.warn { font-weight: 700; fill: var(--warn); }
 .dg-label.halo { paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
 .dg-dim line, .dg-dim path { stroke: var(--warn); stroke-width: 2; }
 .dg-plane path { fill: var(--text); }
+
+/* ---------- in-app keypad (touch devices) ---------- */
+.field-box input[readonly] { caret-color: transparent; cursor: pointer; }
+.field-box:has(input[readonly]:focus) { border-color: var(--accent); }
+body.keypad-open .content { padding-bottom: calc(var(--sab) + 340px); }
+.keypad {
+  position: fixed; z-index: 30; left: 0; right: 0; bottom: 0;
+  background: var(--surface); border-top: 1px solid var(--border);
+  padding: 8px calc(var(--sar) + 12px) calc(var(--sab) + 10px) calc(var(--sal) + 12px);
+  box-shadow: 0 -8px 30px #0006;
+  max-width: 520px; margin: 0 auto; border-radius: 16px 16px 0 0;
+}
+.keypad-head { display: flex; justify-content: space-between; align-items: center; padding: 2px 4px 8px; font-weight: 600; }
+.keypad-done { background: var(--accent); color: #fff; border: 0; border-radius: 10px; padding: 8px 18px; font-weight: 600; cursor: pointer; }
+.keypad-body { display: grid; grid-template-columns: 1fr 72px; gap: 8px; }
+.keypad-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.key {
+  height: 54px; font-size: 24px; background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 12px; cursor: pointer; font-variant-numeric: tabular-nums;
+}
+.key:active { background: var(--border); }
+.key:disabled { opacity: .3; }
+.key.sign { color: var(--accent); font-weight: 700; }
+.key.back { height: auto; }
+
+/* ---------- rule of thumb ---------- */
+.rule-box {
+  border: 2px solid var(--accent); border-radius: 14px; text-align: center;
+  padding: 14px 12px; margin: 8px 0 12px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.rule-main { font-size: 24px; font-weight: 800; color: var(--accent); }
+.rule-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }

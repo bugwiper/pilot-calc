@@ -6,6 +6,9 @@ import { computeCorrection, isaTempC, ISA_LAPSE_PER_FT, ISA_SL_TEMP_K } from './
 import { Diagram } from './Diagram'
 import { type Field, type FormState, makeState, update } from './model'
 
+/** 2.5 → "2.5", 10 → "10" */
+const trim = (n: number, d: number) => String(Number(n.toFixed(d)))
+
 const STORAGE_KEY = 'pilot-calc:temp-correction:v1'
 const DEFAULTS = { ref: 1000, ac: 5000, temp: -10 }
 
@@ -53,7 +56,7 @@ export default function TempCorrectionPage() {
         <LinkedGroup title="Altitudes">
           <NumberField label="Reference" unit="ft MSL" hint="Station of the altimeter setting" value={form.raw.ref} onChange={set('ref')} />
           <NumberField label="Aircraft (indicated)" unit="ft MSL" value={form.raw.ac} onChange={set('ac')} />
-          <NumberField label="Aircraft above reference" unit="ft" signed value={form.raw.above} onChange={set('above')} />
+          <NumberField label="Aircraft above reference" unit="ft" value={form.raw.above} onChange={set('above')} />
         </LinkedGroup>
       </Section>
 
@@ -75,7 +78,7 @@ export default function TempCorrectionPage() {
               <Result label="True height above reference" value={fmtInt(r.trueHeightAboveRef)} unit="ft" />
             </div>
             {r.outsideValidRange && <p className="warning">Layer reaches above 36,089 ft – the ISA lapse rate used here no longer applies.</p>}
-            <Diagram refFt={ref!} indicatedFt={ac!} trueFt={r.trueAltFt} />
+            <Diagram refFt={ref!} indicatedFt={ac!} isaDev={dev!} />
           </>
         ) : (
           <p className="empty">Enter temperature (or deviation) and both altitudes.</p>
@@ -102,18 +105,24 @@ export default function TempCorrectionPage() {
         )}
 
         <h3>Rule of thumb</h3>
-        <p className="note">4 ft per 1000 ft above the reference per 1 °C deviation (ICAO: 4 % per 10 °C).</p>
-        <Formula>
-          <div>Δh ≈ 4 ft × (h<sub>ind</sub> − h<sub>ref</sub>) / 1000 × ΔISA</div>
-        </Formula>
-        {r && dev !== null && (
+        <div className="rule-box">
+          <div className="rule-main">4 % per 10 °C ISA deviation</div>
+          <div className="rule-sub">of the height above the reference · cold: you are lower · warm: higher</div>
+        </div>
+        {r && ac !== null && dev !== null && (
           <>
             <Formula>
+              <div>Δaltitude: <b>{fmtInt(r.heightAboveRef)} ft</b></div>
               <div>
-                Δh ≈ 4 × {fmtDec(r.heightAboveRef / 1000)} × {fmtDec(dev)} = <b>{fmtSigned(r.ruleCorrectionFt)} ft</b>
+                Correction factor = {trim(Math.abs(dev) / 10, 2)} × 4 % = <b>{trim((Math.abs(dev) / 10) * 4, 2)} %</b>
               </div>
               <div>
-                h<sub>true</sub> ≈ <b>{fmtInt(r.ruleTrueAltFt)} ft</b>
+                Correction = {fmtInt(Math.abs(r.heightAboveRef))} ft × {trim((Math.abs(dev) / 10) * 4, 2)} % ={' '}
+                <b>{fmtInt(Math.abs(r.ruleCorrectionFt))} ft</b> {r.ruleCorrectionFt < 0 ? 'lower' : r.ruleCorrectionFt > 0 ? 'higher' : ''}
+              </div>
+              <div>
+                True altitude ≈ {fmtInt(ac)} {r.ruleCorrectionFt < 0 ? '−' : '+'} {fmtInt(Math.abs(r.ruleCorrectionFt))} ={' '}
+                <b>{fmtInt(r.ruleTrueAltFt)} ft</b>
               </div>
             </Formula>
             <div className="results">

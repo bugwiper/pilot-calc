@@ -9,6 +9,13 @@ export const TROPOPAUSE_FT = 36089
 /** ICAO rule of thumb: 4 ft per 1000 ft of height above the reference per 1 °C ISA deviation. */
 export const RULE_FT_PER_1000FT_PER_DEG = 4
 
+export const ISA_SL_PRESSURE_HPA = 1013.25
+
+/** ISA pressure (hPa) at a pressure altitude in ft (troposphere). */
+export const isaPressureHpa = (altFt: number) => ISA_SL_PRESSURE_HPA * (1 - altFt / 145366.45) ** (1 / 0.190284)
+/** ISA pressure altitude (ft) of a pressure level in hPa. */
+export const isaPressureAltFt = (hPa: number) => 145366.45 * (1 - (hPa / ISA_SL_PRESSURE_HPA) ** 0.190284)
+
 export const isaTempC = (altFt: number) => ISA_SL_TEMP_C - ISA_LAPSE_PER_FT * altFt
 
 export const tempToIsaDev = (tempC: number, refFt: number) => tempC - isaTempC(refFt)
