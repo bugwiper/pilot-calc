@@ -68,3 +68,18 @@ export function RuleBox({ title, sub }: { title: string; sub?: string }) {
     </div>
   )
 }
+
+/** On/off switch (role="switch"). */
+export function Toggle({ label, hint, checked, onChange }: { label: string; hint?: string; checked: boolean; onChange: (on: boolean) => void }) {
+  return (
+    <button type="button" role="switch" aria-checked={checked} className="toggle" onClick={() => onChange(!checked)}>
+      <span className="toggle-text">
+        <span>{label}</span>
+        {hint && <span className="hint">{hint}</span>}
+      </span>
+      <span className="toggle-track">
+        <span className="toggle-thumb" />
+      </span>
+    </button>
+  )
+}

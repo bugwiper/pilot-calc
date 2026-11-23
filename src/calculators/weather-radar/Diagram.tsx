@@ -6,6 +6,7 @@ interface Props {
   tiltDeg: number
   distanceNm: number
   heightFt: number // target height relative to the aircraft
+  curvatureFt: number // part of heightFt due to earth curvature
 }
 
 const W = 360
@@ -16,12 +17,16 @@ const MID = 140 // aircraft level (y)
 const HALF = 100 // px for the largest height
 
 /** Side view: beam wedge from the aircraft, cloud whose top sits on the upper beam edge. Vertical scale exaggerated. */
-export function Diagram({ beamWidthDeg, tiltDeg, distanceNm, heightFt }: Props) {
+export function Diagram({ beamWidthDeg, tiltDeg, distanceNm, heightFt, curvatureFt }: Props) {
   const up = tiltDeg + beamWidthDeg / 2
   const low = tiltDeg - beamWidthDeg / 2
-  const hUp = heightAt(distanceNm, up)
-  const hMid = heightAt(distanceNm, tiltDeg)
-  const hLow = heightAt(distanceNm, low)
+  // straight-line heights at the target; curvature lifts the end point and bends the beam (parabola)
+  const fUp = heightAt(distanceNm, up)
+  const fMid = heightAt(distanceNm, tiltDeg)
+  const fLow = heightAt(distanceNm, low)
+  const hUp = fUp + curvatureFt
+  const hMid = fMid + curvatureFt
+  const hLow = fLow + curvatureFt
   const maxH = Math.max(Math.abs(hUp), Math.abs(hMid), Math.abs(hLow), 1000)
   const y = (ft: number) => MID - (ft / maxH) * HALF
 
@@ -29,6 +34,9 @@ export function Diagram({ beamWidthDeg, tiltDeg, distanceNm, heightFt }: Props) 
   const yMid = y(hMid)
   const yLow = y(hLow)
   const yTop = yUp // cloud top = object on the upper edge
+  const xc = (X0 + XO) / 2
+  // control point of the parabola: tangent at the aircraft evaluated halfway
+  const ctl = (f: number) => y(f / 2)
   const above = heightFt >= 0
 
   return (
@@ -44,10 +52,10 @@ export function Diagram({ beamWidthDeg, tiltDeg, distanceNm, heightFt }: Props) 
       </g>
 
       {/* beam */}
-      <path d={`M${X0} ${MID} L${XO} ${yUp} L${XO} ${yLow} Z`} className="dg-beam" />
-      <line x1={X0} y1={MID} x2={XO} y2={yMid} className="dg-center" />
-      <line x1={X0} y1={MID} x2={XO} y2={yLow} className="dg-edge" />
-      <line x1={X0} y1={MID} x2={XO} y2={yUp} className="dg-edge up" />
+      <path d={`M${X0} ${MID} Q${xc} ${ctl(fUp)} ${XO} ${yUp} L${XO} ${yLow} Q${xc} ${ctl(fLow)} ${X0} ${MID} Z`} className="dg-beam" />
+      <path d={`M${X0} ${MID} Q${xc} ${ctl(fMid)} ${XO} ${yMid}`} className="dg-center" />
+      <path d={`M${X0} ${MID} Q${xc} ${ctl(fLow)} ${XO} ${yLow}`} className="dg-edge" />
+      <path d={`M${X0} ${MID} Q${xc} ${ctl(fUp)} ${XO} ${yUp}`} className="dg-edge up" />
       <circle cx={XO} cy={yUp} r="4.5" className="dg-hit" />
 
       {/* aircraft level */}
@@ -77,6 +85,9 @@ export function Diagram({ beamWidthDeg, tiltDeg, distanceNm, heightFt }: Props) 
       <text x={X0 + 64} y={Math.min(yUp, MID) > MID - 14 ? MID - 18 : (yUp + MID) / 2 - 6} className="dg-label halo strong">
         α {fmtDec(up)}°
       </text>
+      {curvatureFt > 0 && (
+        <text x={W - 6} y="16" textAnchor="end" className="dg-label muted">incl. earth curvature (4/3)</text>
+      )}
 
       <g transform={`translate(${X0 - 18} ${MID + 3}) scale(.9)`} className="dg-plane">
         <path d="M-26 -6 Q-26 -12 -14 -12 L16 -12 Q28 -12 32 -6 Q28 0 16 0 L-14 0 Q-26 0 -26 -6 Z" />

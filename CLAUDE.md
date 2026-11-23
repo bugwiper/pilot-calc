@@ -14,7 +14,7 @@ The temperature correction page is the reference for ALL further calculators. Ke
 **Registration:** one folder `src/calculators/<id>/` + one entry in `registry.ts`. Group `general` / `ground` /
 `airborne` decides the heading in the collapsible left navigation (flat list per group). Empty groups show "Coming soon".
 
-**Shared UI blocks** (`src/ui/`): `Section`, `LinkedGroup` (derived fields), `Fields` (independent fields), `Result`, `Formula`, `RuleBox` (framed rule-of-thumb headline), `NumberField`, `numbers.ts` (parse/format). Reuse them; don't restyle per calculator.
+**Shared UI blocks** (`src/ui/`): `Section`, `LinkedGroup` (derived fields), `Fields` (independent fields), `Toggle` (on/off switch, options default to off unless stated), `Result`, `Formula`, `RuleBox` (framed rule-of-thumb headline), `NumberField`, `numbers.ts` (parse/format). Reuse them; don't restyle per calculator.
 
 **Files per calculator:** `calc.ts` (pure functions, no React/DOM), `calc.test.ts` (Vitest), `model.ts` (linked-field
 logic, pure and tested, if needed), `Page.tsx`, optional `Diagram.tsx`.

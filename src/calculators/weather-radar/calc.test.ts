@@ -23,4 +23,13 @@ describe('computeRadar', () => {
   it('zero upper edge means level with the aircraft', () => {
     expect(computeRadar({ beamWidthDeg: 4, tiltDeg: -2, distanceNm: 50 }).exactFt).toBeCloseTo(0, 9)
   })
+  it('ignores earth curvature by default', () => {
+    expect(computeRadar({ beamWidthDeg: 4, tiltDeg: -2, distanceNm: 100 }).curvatureFt).toBe(0)
+  })
+  it('adds the 4/3-earth curvature term when enabled', () => {
+    const r = computeRadar({ beamWidthDeg: 4, tiltDeg: -2, distanceNm: 100, earthCurvature: true })
+    expect(r.curvatureFt).toBeCloseTo(6623.5, -1)
+    expect(r.exactFt).toBeCloseTo(r.curvatureFt, 6)
+    expect(r.beamDepthFt).toBeGreaterThan(0)
+  })
 })
