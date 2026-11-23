@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Formula, LinkedGroup, Result, Section } from '../../ui/Blocks'
+import { Formula, LinkedGroup, Result, RuleBox, Section } from '../../ui/Blocks'
 import { NumberField } from '../../ui/NumberField'
 import { fmtDec, fmtInt, fmtSigned } from '../../ui/format'
 import { computeCorrection, isaTempC, ISA_LAPSE_PER_FT, ISA_SL_TEMP_K } from './calc'
@@ -105,10 +105,7 @@ export default function TempCorrectionPage() {
         )}
 
         <h3>Rule of thumb</h3>
-        <div className="rule-box">
-          <div className="rule-main">4 % per 10 °C ISA deviation</div>
-          <div className="rule-sub">of the height above the reference · cold: you are lower · warm: higher</div>
-        </div>
+        <RuleBox title="4 % per 10 °C ISA deviation" sub="of the height above the reference · cold: you are lower · warm: higher" />
         {r && ac !== null && dev !== null && (
           <>
             <Formula>

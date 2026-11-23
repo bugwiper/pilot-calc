@@ -1,5 +1,8 @@
 // Linked-field input model: temp ⇄ ISA deviation, ref/aircraft MSL ⇄ height above ref.
+import { formatField, parseNum } from '../../ui/numbers'
 import { isaDevToTemp, tempToIsaDev } from './calc'
+
+export { formatField, parseNum }
 
 export type Field = 'temp' | 'dev' | 'ref' | 'ac' | 'above'
 
@@ -8,19 +11,6 @@ export interface FormState {
   raw: Record<Field, string>
   /** Which of temp/dev the user entered last; it stays fixed when the reference height changes. */
   anchor: 'temp' | 'dev'
-}
-
-export function parseNum(text: string): number | null {
-  const t = text.trim().replace(',', '.').replace(/[−–]/g, '-')
-  if (!/^[-+]?(\d+\.?\d*|\.\d+)$/.test(t)) return null
-  const n = Number(t)
-  return Number.isFinite(n) ? n : null
-}
-
-export function formatField(n: number | null, decimals = 1): string {
-  if (n === null) return ''
-  const s = n.toFixed(decimals)
-  return String(Number(s)) // strips trailing zeros, "-0" → "0"
 }
 
 const EMPTY_RAW: Record<Field, string> = { temp: '', dev: '', ref: '', ac: '', above: '' }

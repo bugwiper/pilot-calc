@@ -11,6 +11,7 @@
   --terrain: #8a5a34;
   --terrain-dark: #5e3b1e;
   --grass: #5f8f3a;
+  --cloud: #3a4b60;
   --radius: 14px;
   --nav-w: 264px;
   --sat: env(safe-area-inset-top);
@@ -33,6 +34,7 @@
     --terrain: #a8733f;
     --terrain-dark: #6f4521;
     --grass: #6f9f45;
+    --cloud: #c3cfdd;
     color-scheme: light;
   }
 }
@@ -203,3 +205,13 @@ body.keypad-open .content { padding-bottom: calc(var(--sab) + 340px); }
 }
 .rule-main { font-size: 24px; font-weight: 800; color: var(--accent); }
 .rule-sub { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+/* ---------- weather radar diagram ---------- */
+.dg-cloud { fill: var(--cloud); }
+.dg-beam { fill: color-mix(in srgb, var(--accent) 22%, transparent); }
+.dg-center { stroke: var(--accent); stroke-width: 1; stroke-dasharray: 5 4; }
+.dg-edge { stroke: var(--accent); stroke-width: 1.5; opacity: .7; }
+.dg-edge.up { stroke-width: 2.5; opacity: 1; }
+.dg-hit { fill: var(--warn); stroke: var(--bg); stroke-width: 1.5; }
+.dg-level { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 4; }
+.dg-dist line { stroke: var(--muted); stroke-width: 1.5; }

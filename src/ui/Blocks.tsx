@@ -53,3 +53,18 @@ export function Result({
 export function Formula({ children }: { children: ReactNode }) {
   return <div className="formula">{children}</div>
 }
+
+/** Plain grid of independent input fields. */
+export function Fields({ children }: { children: ReactNode }) {
+  return <div className="linked-fields">{children}</div>
+}
+
+/** Framed, bold rule-of-thumb headline. */
+export function RuleBox({ title, sub }: { title: string; sub?: string }) {
+  return (
+    <div className="rule-box">
+      <div className="rule-main">{title}</div>
+      {sub && <div className="rule-sub">{sub}</div>}
+    </div>
+  )
+}
